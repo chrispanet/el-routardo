@@ -10,6 +10,18 @@ variable "github_repo" {
   default     = "chrispanet/el-routardo"
 }
 
+variable "github_owner_id" {
+  description = "Identifiant numérique du compte GitHub propriétaire (claim sub)"
+  type        = number
+  default     = 162978253
+}
+
+variable "github_repo_id" {
+  description = "Identifiant numérique du dépôt GitHub (claim sub)"
+  type        = number
+  default     = 1371595020
+}
+
 variable "github_oidc_provider_arn" {
   description = "ARN d'un fournisseur OIDC GitHub existant dans le compte. Vide = création."
   type        = string
