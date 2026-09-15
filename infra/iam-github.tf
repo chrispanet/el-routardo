@@ -12,8 +12,9 @@ resource "aws_iam_openid_connect_provider" "github" {
 }
 
 locals {
-  oidc_provider_arn = var.github_oidc_provider_arn != "" ? var.github_oidc_provider_arn : aws_iam_openid_connect_provider.github[0].arn
-  tf_state_bucket   = "el-routardo-tfstate"
+  github_repo_with_ids = "${split("/", var.github_repo)[0]}@${var.github_owner_id}/${split("/", var.github_repo)[1]}@${var.github_repo_id}"
+  oidc_provider_arn    = var.github_oidc_provider_arn != "" ? var.github_oidc_provider_arn : aws_iam_openid_connect_provider.github[0].arn
+  tf_state_bucket      = "el-routardo-tfstate"
 }
 
 data "aws_iam_policy_document" "gha_trust" {
@@ -28,12 +29,16 @@ data "aws_iam_policy_document" "gha_trust" {
       variable = "token.actions.githubusercontent.com:aud"
       values   = ["sts.amazonaws.com"]
     }
+    # GitHub émet le sub sous la forme "repo:owner@<owner_id>/repo@<repo_id>:..."
+    # (constaté dans CloudTrail le 2026-09-15). On accepte les deux formes.
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
       values = [
         "repo:${var.github_repo}:ref:refs/heads/main",
         "repo:${var.github_repo}:pull_request",
+        "repo:${local.github_repo_with_ids}:ref:refs/heads/main",
+        "repo:${local.github_repo_with_ids}:pull_request",
       ]
     }
   }
