@@ -45,9 +45,15 @@ ARCH=$(jq -r '.Configuration.Architectures[0] // "x86_64"' "$OUT_DIR/lambda.json
 echo "    lambda=$LAMBDA_NAME role=$LAMBDA_ROLE_NAME runtime=$RUNTIME handler=$HANDLER"
 
 echo "==> Fournisseur OIDC GitHub"
-OIDC_ARN=$(aws iam list-open-id-connect-providers --query "OpenIDConnectProviderList[?contains(Arn,'token.actions.githubusercontent.com')].Arn | [0]" --output text)
-[ "$OIDC_ARN" = "None" ] && OIDC_ARN=""
-echo "    oidc=${OIDC_ARN:-à créer}"
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+OIDC_ARN="arn:aws:iam::${ACCOUNT_ID}:oidc-provider/token.actions.githubusercontent.com"
+if aws iam get-open-id-connect-provider --open-id-connect-provider-arn "$OIDC_ARN" >/dev/null 2>&1; then
+  echo "    oidc=$OIDC_ARN (existant)"
+elif aws iam list-open-id-connect-providers >/dev/null 2>&1; then
+  OIDC_ARN=""; echo "    oidc=aucun, sera créé"
+else
+  echo "    oidc=$OIDC_ARN (lecture IAM refusée, ARN conventionnel supposé existant)"
+fi
 
 cat > infra/terraform.tfvars <<TFV
 # Généré par scripts/discover.sh le $(date -u +%FT%TZ). Identifiants non secrets.

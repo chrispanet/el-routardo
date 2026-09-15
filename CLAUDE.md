@@ -9,5 +9,6 @@
 - `infra/` est du Terraform. Toute modification passe par une PR (plan automatique)
   puis apply sur `main`. Ne jamais lancer `terraform apply` depuis une session sans accord.
 - Le formulaire de `depart.html` poste vers la Lambda Function URL codée en dur dans le script inline.
-  Ne pas changer cette URL sans mettre à jour `infra/`.
+  Le code de cette Lambda est dans `lambda/suggestions/src/index.py` (Python 3.12).
+- Les ressources AWS existantes sont listées dans le README (IDs, régions). Ne pas les recréer.
 - Vérification locale rapide : `make check` (HTML valide, liens internes présents).

@@ -30,7 +30,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "site" {
 
 data "aws_iam_policy_document" "site_bucket" {
   statement {
-    sid       = "AllowCloudFrontRead"
+    sid       = "AllowCloudFrontOAC"
     actions   = ["s3:GetObject"]
     resources = ["${aws_s3_bucket.site.arn}/*"]
 
