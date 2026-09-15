@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Départ - El Routardo</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127796;</text></svg>">
+</head>
+<body>
+
+<nav class="nav" aria-label="Navigation principale">
+  <a href="index.html">Accueil</a>
+  <a href="arrivee.html">Arrivée</a>
+  <a href="decouvrir.html">Découvrir</a>
+  <a href="depart.html" class="active">Départ</a>
+</nav>
+
+<section class="section">
+  <h2 class="section-title"><span class="icon">&#128075;</span> Au départ</h2>
+  <hr class="divider">
+  <p class="section-intro">L'appartement est loué en bouche-à-oreilles et à un prix très bas. Il est possible que personne ne passe entre deux locations. Merci de laisser l'appartement habitable pour les prochains locataires.</p>
+
+  <div class="instructions">
+    <div class="instr-card instr-card--highlight">
+      <span class="instr-icon">&#129529;</span>
+      <div class="instr-title">Draps & serviettes</div>
+      <div class="instr-text">
+        <strong>Idéal :</strong> lavez vos draps et serviettes et pendez-les dans l'appartement pour qu'ils sèchent.<br><br>
+        <strong>Si ce n'est pas possible :</strong> ne lancez <strong>surtout pas</strong> de machine et ne partez pas ! Le linge moisirait dans la machine.
+        Laissez simplement le linge sale <strong>par terre devant la machine à laver</strong>, sans le mettre dedans.
+      </div>
+    </div>
+
+    <div class="instr-card">
+      <span class="instr-icon">&#128167;</span>
+      <div class="instr-title">Fermer l'eau</div>
+      <div class="instr-text">Ouvrez la fenêtre de la cuisine et refermez le robinet d'arrêt à l'extérieur (sur la gauche). Cela évite tout risque de fuite.</div>
+    </div>
+
+    <div class="instr-card">
+      <span class="instr-icon">&#128701;</span>
+      <div class="instr-title">Cuisine</div>
+      <div class="instr-text">Faites la vaisselle ou videz le lave-vaisselle. Nettoyez les plans de travail et la table. Videz le frigo de vos denrées périssables.</div>
+    </div>
+
+    <div class="instr-card">
+      <span class="instr-icon">&#128465;</span>
+      <div class="instr-title">Poubelles</div>
+      <div class="instr-text">Descendez les poubelles aux points de collecte (voir le <a href="arrivee.html" style="color:var(--primary);font-weight:600;">plan dans la section Arrivée</a>). Attention aux horaires pour éviter les amendes ! Mettez un sac propre dans la poubelle de la cuisine.</div>
+    </div>
+
+    <div class="instr-card">
+      <span class="instr-icon">&#127968;</span>
+      <div class="instr-title">État général</div>
+      <div class="instr-text">Donnez un coup de balai rapide si nécessaire. Vérifiez que les fenêtres sont fermées et la climatisation éteinte.</div>
+    </div>
+
+    <div class="instr-card instr-card--warning">
+      <span class="instr-icon">&#128273;</span>
+      <div class="instr-title">Clés & fermeture</div>
+      <div class="instr-text">
+        Vérifiez que tout est éteint (lumières, plaques, four). Fermez bien la porte à clé.
+        Déposez les clés dans la <strong>boîte aux lettres</strong> (Famille <strong>MARTINEZ BRUNEAU</strong>) ou selon les instructions qui vous ont été communiquées.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUGGESTIONS -->
+<div class="section-alt">
+<section class="section" id="suggestions">
+  <h2 class="section-title"><span class="icon">&#128172;</span> Soumettre une suggestion</h2>
+  <hr class="divider">
+  <p class="section-intro">Vous avez découvert un endroit génial ? Partagez-le ! On ira le tester et on l'ajoutera peut-être au guide.</p>
+
+  <form id="suggestion-form" onsubmit="return false;">
+    <div class="form-group">
+      <label for="sg-name">Votre nom</label>
+      <input type="text" id="sg-name" class="form-input" placeholder="Ex: Marie & Thomas" required>
+    </div>
+
+    <div class="form-group">
+      <label>Catégorie</label>
+      <div class="checkbox-group">
+        <label class="checkbox-pill"><input type="checkbox" name="category" value="Plage"> Plage</label>
+        <label class="checkbox-pill"><input type="checkbox" name="category" value="Culturel"> Culturel</label>
+        <label class="checkbox-pill"><input type="checkbox" name="category" value="Restaurant"> Restaurant</label>
+        <label class="checkbox-pill"><input type="checkbox" name="category" value="Bar"> Bar</label>
+        <label class="checkbox-pill"><input type="checkbox" name="category" value="Shopping"> Shopping</label>
+        <label class="checkbox-pill"><input type="checkbox" name="category" value="Activité"> Activité</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="sg-review">Votre suggestion</label>
+      <textarea id="sg-review" class="form-textarea" placeholder="Nom du lieu, ce que vous avez aimé, conseils pratiques..." required></textarea>
+    </div>
+
+    <button type="submit" class="btn-submit" id="sg-submit">Envoyer la suggestion</button>
+    <div id="sg-message" class="form-message"></div>
+  </form>
+</section>
+</div>
+
+<footer class="footer">
+  <p><a href="index.html" style="color:var(--primary);text-decoration:none;font-weight:600;">El Routardo</a> &mdash; Guide pour Palma de Majorque</p>
+</footer>
+
+<script>
+(function() {
+  var form = document.getElementById('suggestion-form');
+  var btn = document.getElementById('sg-submit');
+  var msg = document.getElementById('sg-message');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var name = document.getElementById('sg-name').value.trim();
+    var review = document.getElementById('sg-review').value.trim();
+    var cats = [];
+    document.querySelectorAll('input[name="category"]:checked').forEach(function(cb) {
+      cats.push(cb.value);
+    });
+
+    if (!name || !review) {
+      msg.className = 'form-message form-message--error';
+      msg.textContent = 'Merci de remplir votre nom et votre suggestion.';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours...';
+    msg.className = 'form-message';
+    msg.style.display = 'none';
+
+    var API_URL = window.SUGGESTIONS_API_URL || 'https://jppdyxoqienfydufsycuxsajy40ydoer.lambda-url.eu-west-3.on.aws/';
+
+    fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name, review: review, categories: cats })
+    })
+    .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
+    .then(function(result) {
+      if (result.ok) {
+        msg.className = 'form-message form-message--success';
+        msg.textContent = result.data.message || 'Merci pour votre suggestion !';
+        form.reset();
+      } else {
+        msg.className = 'form-message form-message--error';
+        msg.textContent = result.data.error || 'Une erreur est survenue.';
+      }
+    })
+    .catch(function() {
+      msg.className = 'form-message form-message--error';
+      msg.textContent = 'Erreur de connexion. Réessayez plus tard.';
+    })
+    .finally(function() {
+      btn.disabled = false;
+      btn.textContent = 'Envoyer la suggestion';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

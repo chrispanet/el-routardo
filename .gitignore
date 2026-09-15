@@ -1,0 +1,11 @@
+# Terraform
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/crash.log
+infra/*.tfplan
+infra/discovery/*.json
+infra/.terraform.tfstate.lock.info
+lambda/**/*.zip
+lambda/**/node_modules/
+.DS_Store

@@ -1,0 +1,14 @@
+# Copie générée automatiquement par scripts/discover.sh sous le nom terraform.tfvars
+aws_region                 = "eu-west-3"
+site_bucket_name           = "NOM_DU_BUCKET"
+site_bucket_region         = "eu-west-3"
+cloudfront_distribution_id = "EXXXXXXXXXXXXX"
+cloudfront_oac_id          = ""
+lambda_function_name       = "NOM_LAMBDA"
+lambda_role_name           = "NOM_ROLE_LAMBDA"
+lambda_runtime             = "nodejs20.x"
+lambda_handler             = "index.handler"
+lambda_timeout             = 10
+lambda_memory_size         = 128
+lambda_architecture        = "x86_64"
+github_oidc_provider_arn   = ""
