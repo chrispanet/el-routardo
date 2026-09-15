@@ -32,9 +32,8 @@ Toute modification fusionnée sur `main` dans `site/` est déployée automatique
 | Bucket des suggestions | `elroutardo` | eu-west-1 |
 | Topic SNS | `elroutardo-suggestions` | eu-west-3 |
 
-Ces ressources portent déjà les tags `ManagedBy=terraform` (créées le 12 mars 2026 par un
-Terraform antérieur). Si ce state d'origine existe encore, il vaut mieux le réutiliser que
-d'importer : dans ce cas remplacer le backend de `infra/versions.tf` et supprimer `infra/imports.tf`.
+Ces ressources ont été créées le 12 mars 2026 par un Terraform dont le state est perdu :
+on repart de zéro en important les ressources existantes (`infra/imports.tf`), sans rien recréer.
 
 ## Mise en place initiale (une seule fois)
 
