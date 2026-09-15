@@ -1,0 +1,48 @@
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "scripts/deploy.sh"
+      - ".github/workflows/deploy-site.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-site
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Vérifications du contenu
+        run: ./scripts/check.sh
+
+      - name: Authentification AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'eu-west-3' }}
+
+      - name: Sync S3 + invalidation CloudFront
+        env:
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+        run: ./scripts/deploy.sh
+
+      - name: Vérification en ligne
+        run: |
+          set -euo pipefail
+          for f in index.html arrivee.html decouvrir.html depart.html style.css; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "https://d1bedazj92888q.cloudfront.net/$f")
+            echo "$f -> $code"; [ "$code" = "200" ]
+          done

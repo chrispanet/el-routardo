@@ -1,0 +1,474 @@
+/* El Routardo - Guide Palma de Majorque */
+
+:root {
+  --primary: #1A8A7D;
+  --primary-dark: #147068;
+  --primary-light: #E8F5F3;
+  --accent: #E8985E;
+  --accent-light: #FDF0E6;
+  --bg: #FFFCF7;
+  --surface: #FFFFFF;
+  --text: #2D3436;
+  --text-secondary: #636E72;
+  --border: #E8E0D8;
+  --section-alt: #F7F3EE;
+  --radius: 12px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-hover: 0 4px 20px rgba(0,0,0,0.12);
+  --max-width: 900px;
+  --nav-height: 56px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-height) + 8px); }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- NAV --- */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,252,247,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.nav a {
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 24px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.nav a:hover, .nav a:focus { color: var(--primary); background: var(--primary-light); }
+
+/* --- HERO --- */
+.hero {
+  text-align: center;
+  padding: 64px 24px 48px;
+  background: linear-gradient(160deg, var(--primary-light) 0%, var(--bg) 50%, var(--accent-light) 100%);
+}
+.hero-logo {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -1px;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.hero-sub {
+  margin-top: 8px;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+.hero-tagline {
+  margin-top: 20px;
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.7;
+}
+
+/* --- SECTIONS --- */
+.section {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 48px 20px 32px;
+}
+.section-alt { background: var(--section-alt); }
+.section-alt .section { padding-top: 48px; padding-bottom: 40px; }
+.section-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 24px;
+  font-family: Georgia, 'Times New Roman', serif;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-title .icon { font-size: 1.4rem; }
+.section-intro {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* --- SUBSECTIONS --- */
+.subsection-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 32px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--primary-light);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.subsection-title:first-of-type { margin-top: 0; }
+
+/* --- CARDS GRID --- */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+@media (min-width: 640px) {
+  .cards { grid-template-columns: repeat(2, 1fr); }
+  .cards--single { grid-template-columns: 1fr; }
+}
+
+/* --- CARD --- */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.card-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+.card-badges { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.badge-rating {
+  color: #E8985E;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+}
+.badge-price {
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.card-meta {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+.card-meta span { display: flex; align-items: center; gap: 3px; }
+.card-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* --- INSTRUCTION CARDS --- */
+.instructions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+@media (min-width: 640px) {
+  .instructions { grid-template-columns: repeat(2, 1fr); }
+}
+.instr-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid var(--border);
+}
+.instr-card--highlight {
+  border-color: var(--primary);
+  border-width: 2px;
+  background: var(--primary-light);
+}
+.instr-card--warning {
+  border-color: var(--accent);
+  border-width: 2px;
+  background: var(--accent-light);
+}
+.instr-icon {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+  display: block;
+}
+.instr-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.instr-text {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* --- INFO BLOCKS --- */
+.info-block {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.info-block h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.info-block p, .info-block ul {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.info-block ul { padding-left: 20px; }
+.info-block li { margin-bottom: 4px; }
+
+/* --- DIVIDER --- */
+.divider {
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border: none;
+  border-radius: 2px;
+  max-width: 80px;
+  margin: 0 auto 32px;
+}
+
+/* --- FOOTER --- */
+.footer {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  border-top: 1px solid var(--border);
+}
+
+/* --- FULL-WIDTH WRAPPER --- */
+.full-width { max-width: 100%; }
+
+/* --- HUB GRID --- */
+.hub-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 20px 48px;
+}
+@media (min-width: 640px) {
+  .hub-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.hub-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 28px 24px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.25s;
+}
+.hub-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-3px);
+}
+.hub-card-icon { font-size: 2rem; }
+.hub-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.hub-card-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* --- CARD AS LINK --- */
+a.card {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  cursor: pointer;
+}
+a.card:hover .card-name { color: var(--primary); }
+a.card::after {
+  content: 'Google Maps >';
+  display: block;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--primary);
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+a.card:hover::after { opacity: 1; }
+
+/* --- NAV ACTIVE STATE --- */
+.nav a.active { color: var(--primary); background: var(--primary-light); }
+
+/* --- TRASH MAP --- */
+.trash-map {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 16px;
+  margin: 16px 0;
+  overflow: hidden;
+}
+.trash-map svg { width: 100%; height: auto; display: block; }
+
+/* --- PRODUCT GRID --- */
+.product-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+@media (min-width: 640px) {
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.product-item {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+}
+.product-item strong {
+  color: var(--primary-dark);
+  display: block;
+  margin-bottom: 4px;
+}
+.product-item span {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* --- SUGGESTION FORM --- */
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.form-input, .form-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.2s;
+}
+.form-input:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(26, 138, 125, 0.12);
+}
+.form-textarea { min-height: 100px; resize: vertical; }
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.checkbox-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+  background: var(--surface);
+}
+.checkbox-pill:has(input:checked) {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary-dark);
+}
+.checkbox-pill input { display: none; }
+.btn-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-submit:hover { background: var(--primary-dark); }
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+.form-message {
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  display: none;
+}
+.form-message--success {
+  display: block;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+.form-message--error {
+  display: block;
+  background: var(--accent-light);
+  color: #c0392b;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 480px) {
+  .hero { padding: 48px 16px 36px; }
+  .hero-logo { font-size: 2.2rem; }
+  .section { padding: 36px 16px 24px; }
+  .section-title { font-size: 1.35rem; }
+  .nav a { font-size: 0.78rem; padding: 6px 10px; }
+}
