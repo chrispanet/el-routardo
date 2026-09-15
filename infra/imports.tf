@@ -40,11 +40,6 @@ import {
 }
 
 import {
-  to = aws_iam_role.lambda
-  id = var.lambda_role_name
-}
-
-import {
   to = aws_lambda_function.suggestions
   id = var.lambda_function_name
 }
@@ -52,4 +47,15 @@ import {
 import {
   to = aws_lambda_function_url.suggestions
   id = var.lambda_function_name
+}
+
+import {
+  provider = aws.eu-west-1
+  to       = aws_s3_bucket.suggestions
+  id       = var.suggestions_bucket_name
+}
+
+import {
+  to = aws_sns_topic.suggestions
+  id = "arn:aws:sns:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${var.sns_topic_name}"
 }

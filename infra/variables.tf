@@ -46,7 +46,7 @@ variable "lambda_function_name" {
 }
 
 variable "lambda_role_name" {
-  description = "Nom du rôle IAM d'exécution de la Lambda"
+  description = "Nom du rôle IAM d'exécution de la Lambda (référencé, non géré)"
   type        = string
 }
 
@@ -73,4 +73,16 @@ variable "lambda_memory_size" {
 variable "lambda_architecture" {
   type    = string
   default = "x86_64"
+}
+
+variable "suggestions_bucket_name" {
+  description = "Bucket S3 où la Lambda enregistre les suggestions"
+  type        = string
+  default     = "elroutardo"
+}
+
+variable "sns_topic_name" {
+  description = "Topic SNS notifié à chaque suggestion"
+  type        = string
+  default     = "elroutardo-suggestions"
 }

@@ -1,23 +1,20 @@
-# Lambda "suggestions" existante + sa Function URL publique, importées.
+# Lambda "suggestions" existante (Python 3.12) + Function URL publique + dépendances, importées.
+# Elle enregistre chaque suggestion dans le bucket "elroutardo" (préfixe suggestions/)
+# et publie une notification sur le topic SNS "elroutardo-suggestions".
 
-data "aws_iam_policy_document" "lambda_assume" {
-  statement {
-    actions = ["sts:AssumeRole"]
-    principals {
-      type        = "Service"
-      identifiers = ["lambda.amazonaws.com"]
-    }
-  }
+locals {
+  # Rôle d'exécution existant, référencé mais non géré (ses politiques restent hors Terraform).
+  lambda_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.lambda_role_name}"
 }
 
-resource "aws_iam_role" "lambda" {
-  name               = var.lambda_role_name
-  assume_role_policy = data.aws_iam_policy_document.lambda_assume.json
+resource "aws_s3_bucket" "suggestions" {
+  provider = aws.eu-west-1
+  bucket   = var.suggestions_bucket_name
+}
 
-  lifecycle {
-    # Les politiques attachées existantes (logs, SES...) ne sont pas déclarées : Terraform ne les touche pas.
-    ignore_changes = [description, tags, tags_all]
-  }
+resource "aws_sns_topic" "suggestions" {
+  name = var.sns_topic_name
+  # Les abonnements (e-mail) ne sont pas gérés ici.
 }
 
 data "archive_file" "suggestions" {
@@ -28,7 +25,7 @@ data "archive_file" "suggestions" {
 
 resource "aws_lambda_function" "suggestions" {
   function_name = var.lambda_function_name
-  role          = aws_iam_role.lambda.arn
+  role          = local.lambda_role_arn
   runtime       = var.lambda_runtime
   handler       = var.lambda_handler
   timeout       = var.lambda_timeout
@@ -38,21 +35,23 @@ resource "aws_lambda_function" "suggestions" {
   filename         = data.archive_file.suggestions.output_path
   source_code_hash = data.archive_file.suggestions.output_base64sha256
 
-  lifecycle {
-    # À RETIRER une fois le vrai code commité dans lambda/suggestions/src (make fetch-lambda).
-    # Tant que ce bloc est là, Terraform ne touche ni au code ni aux variables d'environnement.
-    ignore_changes = [filename, source_code_hash, environment, layers, description, tags, tags_all]
+  environment {
+    variables = {
+      BUCKET_NAME   = aws_s3_bucket.suggestions.bucket
+      SNS_TOPIC_ARN = aws_sns_topic.suggestions.arn
+    }
   }
 }
 
 resource "aws_lambda_function_url" "suggestions" {
   function_name      = aws_lambda_function.suggestions.function_name
   authorization_type = "NONE"
+  invoke_mode        = "BUFFERED"
 
   cors {
-    allow_origins = ["*"]
-    allow_methods = ["POST"]
-    allow_headers = ["content-type"]
-    max_age       = 86400
+    allow_credentials = false
+    allow_origins     = ["*"]
+    allow_methods     = ["POST"]
+    allow_headers     = ["content-type"]
   }
 }

@@ -96,6 +96,18 @@ data "aws_iam_policy_document" "gha_permissions" {
     resources = [aws_lambda_function.suggestions.arn]
   }
 
+  # Dépendances de la Lambda (lecture / tags)
+  statement {
+    sid       = "SuggestionsBucketRead"
+    actions   = ["s3:GetBucket*", "s3:ListBucket", "s3:GetEncryptionConfiguration"]
+    resources = [aws_s3_bucket.suggestions.arn]
+  }
+  statement {
+    sid       = "SnsTopic"
+    actions   = ["sns:GetTopicAttributes", "sns:SetTopicAttributes", "sns:ListTagsForResource", "sns:TagResource", "sns:UntagResource"]
+    resources = [aws_sns_topic.suggestions.arn]
+  }
+
   # IAM : lecture des rôles gérés + passage du rôle Lambda
   statement {
     sid = "IamRead"
@@ -106,9 +118,14 @@ data "aws_iam_policy_document" "gha_permissions" {
     resources = ["*"]
   }
   statement {
-    sid       = "IamManageOwnRoles"
-    actions   = ["iam:UpdateAssumeRolePolicy", "iam:PutRolePolicy", "iam:DeleteRolePolicy", "iam:TagRole", "iam:UntagRole", "iam:PassRole"]
-    resources = [aws_iam_role.lambda.arn, aws_iam_role.gha.arn]
+    sid       = "IamManageOwnRole"
+    actions   = ["iam:UpdateAssumeRolePolicy", "iam:PutRolePolicy", "iam:DeleteRolePolicy", "iam:TagRole", "iam:UntagRole"]
+    resources = [aws_iam_role.gha.arn]
+  }
+  statement {
+    sid       = "PassLambdaRole"
+    actions   = ["iam:PassRole"]
+    resources = [local.lambda_role_arn]
   }
 }
 
