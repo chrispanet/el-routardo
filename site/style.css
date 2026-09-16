@@ -353,6 +353,30 @@ a.card:hover::after { opacity: 1; }
 }
 .trash-map svg { width: 100%; height: auto; display: block; }
 
+.trash-list { list-style: none; margin: 16px 0 0; padding: 0; }
+.trash-list li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+.trash-list li:first-child { border-top: none; padding-top: 0; }
+.trash-num {
+  flex: 0 0 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #FFFFFF;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.trash-list strong { font-size: 0.95rem; }
+.trash-list p { margin: 2px 0 0; font-size: 0.9rem; color: var(--text-secondary); }
+
 /* --- PRODUCT GRID --- */
 .product-grid {
   display: grid;
