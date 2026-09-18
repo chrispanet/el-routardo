@@ -1,5 +1,10 @@
 output "site_url" {
-  value = "https://${aws_cloudfront_distribution.site.domain_name}"
+  value = "https://${var.site_domain}"
+}
+
+output "site_cloudfront_url" {
+  description = "URL CloudFront d'origine, conservee et toujours fonctionnelle"
+  value       = "https://${aws_cloudfront_distribution.site.domain_name}"
 }
 
 output "site_bucket" {
