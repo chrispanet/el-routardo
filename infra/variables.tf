@@ -98,3 +98,17 @@ variable "sns_topic_name" {
   type        = string
   default     = "elroutardo-suggestions"
 }
+
+# --- Nom de domaine interne ---
+
+variable "site_domain" {
+  description = "Nom de domaine servi par CloudFront"
+  type        = string
+  default     = "routardo.azean.com"
+}
+
+variable "parent_hosted_zone_id" {
+  description = "Zone hebergee Route 53 de azean.com (partagee, non geree par ce depot)"
+  type        = string
+  default     = "Z0076746426XHFSVXWRW"
+}
