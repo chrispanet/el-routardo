@@ -1,0 +1,3 @@
+# El Routardo - projet interne, pas de referencement.
+User-agent: *
+Disallow: /
