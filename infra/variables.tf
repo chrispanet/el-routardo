@@ -112,3 +112,9 @@ variable "parent_hosted_zone_id" {
   type        = string
   default     = "Z0076746426XHFSVXWRW"
 }
+
+variable "github_environment" {
+  description = "Environnement GitHub du job apply (le claim sub finit par \":environment:<nom>\")"
+  type        = string
+  default     = "production"
+}
