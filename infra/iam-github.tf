@@ -31,14 +31,22 @@ data "aws_iam_policy_document" "gha_trust" {
     }
     # GitHub émet le sub sous la forme "repo:owner@<owner_id>/repo@<repo_id>:..."
     # (constaté dans CloudTrail le 2026-09-15). On accepte les deux formes.
+    #
+    # Un job rattaché à un environnement GitHub voit son sub se terminer par
+    # ":environment:<nom>" au lieu de ":ref:refs/heads/main". Le job apply du
+    # workflow Terraform déclare "environment: production", d'où un sub
+    # "repo:chrispanet@162978253/el-routardo@1371595020:environment:production"
+    # refusé jusqu'ici (CloudTrail eu-west-3, 2026-09-18, 24 AccessDenied).
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
       values = [
         "repo:${var.github_repo}:ref:refs/heads/main",
         "repo:${var.github_repo}:pull_request",
+        "repo:${var.github_repo}:environment:${var.github_environment}",
         "repo:${local.github_repo_with_ids}:ref:refs/heads/main",
         "repo:${local.github_repo_with_ids}:pull_request",
+        "repo:${local.github_repo_with_ids}:environment:${var.github_environment}",
       ]
     }
   }
