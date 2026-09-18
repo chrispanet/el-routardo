@@ -24,3 +24,17 @@ provider "aws" {
     }
   }
 }
+
+# ACM pour CloudFront doit vivre en us-east-1.
+provider "aws" {
+  alias  = "us-east-1"
+  region = "us-east-1"
+
+  default_tags {
+    tags = {
+      Project     = "elroutardo"
+      Environment = "prod"
+      ManagedBy   = "terraform"
+    }
+  }
+}

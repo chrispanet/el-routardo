@@ -18,6 +18,7 @@ resource "aws_cloudfront_distribution" "site" {
   is_ipv6_enabled     = false
   comment             = "El Routardo - Guide Palma"
   default_root_object = "index.html"
+  aliases             = [var.site_domain]
   price_class         = "PriceClass_100"
   http_version        = "http2"
 
@@ -33,6 +34,8 @@ resource "aws_cloudfront_distribution" "site" {
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
     compress               = true
+
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.noindex.id
 
     # Configuration héritée (pas de cache policy) : conservée telle quelle.
     forwarded_values {
@@ -54,6 +57,8 @@ resource "aws_cloudfront_distribution" "site" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = aws_acm_certificate_validation.site.certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 }

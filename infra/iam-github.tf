@@ -139,3 +139,53 @@ resource "aws_iam_role_policy" "gha" {
   role   = aws_iam_role.gha.id
   policy = data.aws_iam_policy_document.gha_permissions.json
 }
+
+# Droits du nom de domaine, dans une policy séparée.
+#
+# Elle ne référence aucune ressource de ce dépôt (uniquement le rôle et
+# l'identifiant de la zone). C'est ce qui permet aux ressources de dns.tf de
+# dépendre d'elle sans créer de cycle : la policy principale, elle, référence
+# l'ARN de la distribution CloudFront, que dns.tf modifie à son tour.
+data "aws_iam_policy_document" "gha_dns" {
+  # Certificat ACM du nom de domaine (us-east-1, imposé par CloudFront).
+  # RequestCertificate ne supporte pas le filtrage par ressource à la création.
+  statement {
+    sid = "Acm"
+    actions = [
+      "acm:RequestCertificate", "acm:DescribeCertificate", "acm:ListCertificates",
+      "acm:AddTagsToCertificate", "acm:RemoveTagsFromCertificate", "acm:ListTagsForCertificate",
+      "acm:DeleteCertificate", "acm:GetCertificate",
+    ]
+    resources = ["*"]
+  }
+
+  # Route 53 : validation du certificat et enregistrement du site.
+  # L'écriture est limitée à la zone azean.com, le reste est en lecture seule.
+  statement {
+    sid       = "Route53Write"
+    actions   = ["route53:ChangeResourceRecordSets", "route53:ListResourceRecordSets", "route53:GetHostedZone"]
+    resources = ["arn:aws:route53:::hostedzone/${var.parent_hosted_zone_id}"]
+  }
+  statement {
+    sid       = "Route53Read"
+    actions   = ["route53:GetChange", "route53:ListHostedZones", "route53:ListHostedZonesByName"]
+    resources = ["*"]
+  }
+
+  # Politique d'en-têtes de réponse CloudFront (X-Robots-Tag).
+  statement {
+    sid = "CloudFrontResponseHeaders"
+    actions = [
+      "cloudfront:CreateResponseHeadersPolicy", "cloudfront:GetResponseHeadersPolicy",
+      "cloudfront:GetResponseHeadersPolicyConfig", "cloudfront:UpdateResponseHeadersPolicy",
+      "cloudfront:DeleteResponseHeadersPolicy", "cloudfront:ListResponseHeadersPolicies",
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "gha_dns" {
+  name   = "el-routardo-gha-dns"
+  role   = aws_iam_role.gha.id
+  policy = data.aws_iam_policy_document.gha_dns.json
+}
