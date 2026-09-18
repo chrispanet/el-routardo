@@ -4,6 +4,12 @@ infra/*.tfstate
 infra/*.tfstate.*
 infra/crash.log
 infra/*.tfplan
+# "make plan" ecrit infra/tfplan, sans extension : le motif ci-dessus ne
+# l'attrapait pas et un plan (qui embarque le state complet) s'est retrouve
+# pousse sur un depot public le 2026-09-18.
+infra/tfplan
+tfplan
+*.tfplan
 infra/discovery/*.json
 infra/.terraform.tfstate.lock.info
 lambda/**/*.zip
