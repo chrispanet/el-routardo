@@ -52,11 +52,18 @@ resource "aws_iam_role" "gha" {
 
 data "aws_iam_policy_document" "gha_permissions" {
   # Contenu du site
+  #
+  # Lecture en s3:Get* plutôt qu'en liste d'actions : rafraîchir un
+  # aws_s3_bucket lit une douzaine de sous-configurations, dont certaines
+  # portent un nom d'action IAM qui ne contient pas "Bucket" et échappaient
+  # donc à s3:GetBucket*. Le plan du run 35346847811 est mort en 403 sur
+  # s3:GetAccelerateConfiguration. L'étoile reste bornée à ce seul bucket ;
+  # l'écriture, elle, reste énumérée.
   statement {
     sid = "SiteBucket"
     actions = [
-      "s3:ListBucket", "s3:GetObject", "s3:PutObject", "s3:DeleteObject",
-      "s3:GetBucket*", "s3:PutBucket*", "s3:GetEncryptionConfiguration", "s3:PutEncryptionConfiguration",
+      "s3:Get*", "s3:ListBucket",
+      "s3:PutObject", "s3:DeleteObject", "s3:PutBucket*", "s3:PutEncryptionConfiguration",
     ]
     resources = [aws_s3_bucket.site.arn, "${aws_s3_bucket.site.arn}/*"]
   }
@@ -103,8 +110,10 @@ data "aws_iam_policy_document" "gha_permissions" {
 
   # Dépendances de la Lambda (lecture / tags)
   statement {
+    # Bornée à l'ARN du bucket, sans "/*" : configurations seulement,
+    # aucun accès aux suggestions elles-mêmes.
     sid       = "SuggestionsBucketRead"
-    actions   = ["s3:GetBucket*", "s3:ListBucket", "s3:GetEncryptionConfiguration"]
+    actions   = ["s3:Get*", "s3:ListBucket"]
     resources = [aws_s3_bucket.suggestions.arn]
   }
   statement {
