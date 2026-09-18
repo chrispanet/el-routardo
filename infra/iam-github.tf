@@ -52,11 +52,18 @@ resource "aws_iam_role" "gha" {
 
 data "aws_iam_policy_document" "gha_permissions" {
   # Contenu du site
+  #
+  # Lecture en s3:Get* plutôt qu'en liste d'actions : rafraîchir un
+  # aws_s3_bucket lit une douzaine de sous-configurations, dont certaines
+  # portent un nom d'action IAM qui ne contient pas "Bucket" et échappaient
+  # donc à s3:GetBucket*. Le plan du run 35346847811 est mort en 403 sur
+  # s3:GetAccelerateConfiguration. L'étoile reste bornée à ce seul bucket ;
+  # l'écriture, elle, reste énumérée.
   statement {
     sid = "SiteBucket"
     actions = [
-      "s3:ListBucket", "s3:GetObject", "s3:PutObject", "s3:DeleteObject",
-      "s3:GetBucket*", "s3:PutBucket*", "s3:GetEncryptionConfiguration", "s3:PutEncryptionConfiguration",
+      "s3:Get*", "s3:ListBucket",
+      "s3:PutObject", "s3:DeleteObject", "s3:PutBucket*", "s3:PutEncryptionConfiguration",
     ]
     resources = [aws_s3_bucket.site.arn, "${aws_s3_bucket.site.arn}/*"]
   }
@@ -103,8 +110,10 @@ data "aws_iam_policy_document" "gha_permissions" {
 
   # Dépendances de la Lambda (lecture / tags)
   statement {
+    # Bornée à l'ARN du bucket, sans "/*" : configurations seulement,
+    # aucun accès aux suggestions elles-mêmes.
     sid       = "SuggestionsBucketRead"
-    actions   = ["s3:GetBucket*", "s3:ListBucket", "s3:GetEncryptionConfiguration"]
+    actions   = ["s3:Get*", "s3:ListBucket"]
     resources = [aws_s3_bucket.suggestions.arn]
   }
   statement {
@@ -138,4 +147,54 @@ resource "aws_iam_role_policy" "gha" {
   name   = "el-routardo-gha"
   role   = aws_iam_role.gha.id
   policy = data.aws_iam_policy_document.gha_permissions.json
+}
+
+# Droits du nom de domaine, dans une policy séparée.
+#
+# Elle ne référence aucune ressource de ce dépôt (uniquement le rôle et
+# l'identifiant de la zone). C'est ce qui permet aux ressources de dns.tf de
+# dépendre d'elle sans créer de cycle : la policy principale, elle, référence
+# l'ARN de la distribution CloudFront, que dns.tf modifie à son tour.
+data "aws_iam_policy_document" "gha_dns" {
+  # Certificat ACM du nom de domaine (us-east-1, imposé par CloudFront).
+  # RequestCertificate ne supporte pas le filtrage par ressource à la création.
+  statement {
+    sid = "Acm"
+    actions = [
+      "acm:RequestCertificate", "acm:DescribeCertificate", "acm:ListCertificates",
+      "acm:AddTagsToCertificate", "acm:RemoveTagsFromCertificate", "acm:ListTagsForCertificate",
+      "acm:DeleteCertificate", "acm:GetCertificate",
+    ]
+    resources = ["*"]
+  }
+
+  # Route 53 : validation du certificat et enregistrement du site.
+  # L'écriture est limitée à la zone azean.com, le reste est en lecture seule.
+  statement {
+    sid       = "Route53Write"
+    actions   = ["route53:ChangeResourceRecordSets", "route53:ListResourceRecordSets", "route53:GetHostedZone"]
+    resources = ["arn:aws:route53:::hostedzone/${var.parent_hosted_zone_id}"]
+  }
+  statement {
+    sid       = "Route53Read"
+    actions   = ["route53:GetChange", "route53:ListHostedZones", "route53:ListHostedZonesByName"]
+    resources = ["*"]
+  }
+
+  # Politique d'en-têtes de réponse CloudFront (X-Robots-Tag).
+  statement {
+    sid = "CloudFrontResponseHeaders"
+    actions = [
+      "cloudfront:CreateResponseHeadersPolicy", "cloudfront:GetResponseHeadersPolicy",
+      "cloudfront:GetResponseHeadersPolicyConfig", "cloudfront:UpdateResponseHeadersPolicy",
+      "cloudfront:DeleteResponseHeadersPolicy", "cloudfront:ListResponseHeadersPolicies",
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "gha_dns" {
+  name   = "el-routardo-gha-dns"
+  role   = aws_iam_role.gha.id
+  policy = data.aws_iam_policy_document.gha_dns.json
 }
