@@ -125,21 +125,20 @@ générique `*.azean.com` : seul `*.azean.com` serait alors publié. Si l'accès
 être réellement restreint et pas seulement discret, c'est une authentification
 qu'il faut ajouter, pas du DNS.
 
-## Débloquer la CI Terraform (une seule fois)
+## Historique : déblocage de la CI Terraform (fait le 2026-09-18)
 
 Le rôle `el-routardo-gha` n'avait pas assez de droits en lecture S3 : rafraîchir
 un `aws_s3_bucket` appelle `GetBucketAccelerateConfiguration`, dont l'action IAM
 s'appelle `s3:GetAccelerateConfiguration` et n'était donc pas couverte par
-`s3:GetBucket*`. Tout `terraform plan` en CI meurt en 403 là-dessus.
+`s3:GetBucket*`. Tout `terraform plan` en CI mourait en 403 là-dessus.
 
-Le correctif est dans `infra/iam-github.tf`, mais il ne peut pas s'appliquer tout
-seul : le job `apply` dépend du job `plan`, qui échoue justement par manque de ce
-droit. Il faut donc une fois, en local, avec un profil AWS disposant des droits
-IAM (la clé des sessions Claude ne les a pas) :
+Le correctif ne pouvait pas s'appliquer via la CI : le job `apply` dépend du job
+`plan`, qui échouait justement par manque de ce droit. Il a donc été appliqué
+une fois en local avec un profil administrateur, en même temps que la mise en
+place du nom de domaine. La lecture S3 est passée en `s3:Get*` bornée aux ARN
+des deux buckets, pour ne plus dépendre de l'orthographe exacte de chaque nom
+d'action.
 
-```bash
-make init plan
-make apply
-```
-
-Ensuite la CI tourne seule : les plans sur PR et les applies sur `main` passent.
+Le rôle porte désormais ces droits. Cette section reste à titre d'explication si
+le symptôme réapparaît : un 403 en `plan` sur une action S3 signifie qu'une
+sous-configuration de bucket n'est pas couverte par la policy.
