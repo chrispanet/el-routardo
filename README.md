@@ -124,3 +124,22 @@ contenu n'est pas indexé. Pour masquer aussi le nom, il faudrait un certificat
 générique `*.azean.com` : seul `*.azean.com` serait alors publié. Si l'accès doit
 être réellement restreint et pas seulement discret, c'est une authentification
 qu'il faut ajouter, pas du DNS.
+
+## Débloquer la CI Terraform (une seule fois)
+
+Le rôle `el-routardo-gha` n'avait pas assez de droits en lecture S3 : rafraîchir
+un `aws_s3_bucket` appelle `GetBucketAccelerateConfiguration`, dont l'action IAM
+s'appelle `s3:GetAccelerateConfiguration` et n'était donc pas couverte par
+`s3:GetBucket*`. Tout `terraform plan` en CI meurt en 403 là-dessus.
+
+Le correctif est dans `infra/iam-github.tf`, mais il ne peut pas s'appliquer tout
+seul : le job `apply` dépend du job `plan`, qui échoue justement par manque de ce
+droit. Il faut donc une fois, en local, avec un profil AWS disposant des droits
+IAM (la clé des sessions Claude ne les a pas) :
+
+```bash
+make init plan
+make apply
+```
+
+Ensuite la CI tourne seule : les plans sur PR et les applies sur `main` passent.
